@@ -18,46 +18,43 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-class SdmWsViewModel(application: Application) : AndroidViewModel(application) {
-    val cursoMl: MutableLiveData<Curso> = MutableLiveData()
-    val semestreMl: MutableLiveData<Semestre> = MutableLiveData()
-    val disciplinaMl: MutableLiveData<Disciplina> = MutableLiveData()
+class SdmWsViewModel(application: Application): AndroidViewModel(application) {
+    val cursoMld: MutableLiveData<Curso> = MutableLiveData()
+    val semestreMld: MutableLiveData<Semestre> = MutableLiveData()
+    val disciplinaMld: MutableLiveData<Disciplina> = MutableLiveData()
     private val escopoCorrotinas = CoroutineScope(Dispatchers.IO + Job())
     private val filaRequisicoesVolley: RequestQueue =
         Volley.newRequestQueue(application.baseContext)
 
     companion object {
-        val URL_BASE = "http://mobile.pro.br/sdm_ws"
+        val URL_BASE = "http://nobile.pro.br/sdm_ws"
         val ENDPOINT_CURSO = "/curso"
-        val ENDPOINT_DISCIPLINA = "/disciplina"
         val ENDPOINT_SEMESTRE = "/semestre"
+        val ENDPOINT_DISCIPLINA = "/disciplina"
     }
-
 
     fun getCurso() {
         escopoCorrotinas.launch {
             val urlCurso = "${URL_BASE}${ENDPOINT_CURSO}"
-            val requisicaoCursoJob = JsonObjectRequest(
+            val requisicaoCursoJor = JsonObjectRequest(
                 Request.Method.GET,
                 urlCurso,
                 null,
                 { response ->
-                    if (response != null) {
+                    if (response != null ) {
                         val curso: Curso = jsonToCurso(response)
-                        cursoMl.postValue(curso)
+                        cursoMld.postValue(curso)
                     }
                 },
                 { error -> Log.e(urlCurso, error.toString()) }
             )
-            filaRequisicoesVolley.add(requisicaoCursoJob)
+            filaRequisicoesVolley.add(requisicaoCursoJor)
         }
-
     }
-
     fun getSemestre(sid: Int) {
         escopoCorrotinas.launch {
-            val urlSemestre = "${URL_BASE}${ENDPOINT_SEMESTRE}"
-            val requisicaoSemestreJob = JsonArrayRequest(
+            val urlSemestre = "${URL_BASE}${ENDPOINT_SEMESTRE}/$sid"
+            val requisicaoSemestreJar = JsonArrayRequest(
                 Request.Method.GET,
                 urlSemestre,
                 null,
@@ -69,15 +66,14 @@ class SdmWsViewModel(application: Application) : AndroidViewModel(application) {
                             val disciplina = jsonToDisciplina(disciplinaJson)
                             semestre.add(disciplina)
                         }
-                        semestreMl.postValue(semestre)
+                        semestreMld.postValue(semestre)
                     }
                 },
                 { error -> Log.e(urlSemestre, error.toString()) }
             )
-            filaRequisicoesVolley.add(requisicaoSemestreJob)
+            filaRequisicoesVolley.add(requisicaoSemestreJar)
         }
     }
-
     fun getDisciplina(sigla: String) {
 
     }
@@ -89,7 +85,6 @@ class SdmWsViewModel(application: Application) : AndroidViewModel(application) {
             json.getInt("semestres"),
             json.getString("sigla")
         )
-
         return curso
     }
 
@@ -98,9 +93,8 @@ class SdmWsViewModel(application: Application) : AndroidViewModel(application) {
             json.getInt("aulas"),
             json.getInt("horas"),
             json.getString("nome"),
-            json.getString("sigla"),
+            json.getString("sigla")
         )
-
         return disciplina
     }
 }

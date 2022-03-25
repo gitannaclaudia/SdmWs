@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             .AndroidViewModelFactory(this.application)
             .create(SdmWsViewModel::class.java)
 
-        sdmWsViewModel.cursoMl.observe(this) { curso ->
+        sdmWsViewModel.cursoMld.observe(this) { curso ->
             val cursoSb = StringBuilder()
             cursoSb.append("Nome: ${curso.nome}\n")
             cursoSb.append("Sigla: ${curso.sigla}\n")
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Observando o mld semestre
-        sdmWsViewModel.semestreMl.observe(this) { semestre ->
+        sdmWsViewModel.semestreMld.observe(this) { semestre ->
             listaSiglasDisciplinas.clear()
             semestre.forEach { disciplina ->
                 disciplina.sigla.also { sigla ->
